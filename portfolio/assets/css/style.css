@@ -1,109 +1,103 @@
 /* General */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  background: radial-gradient(circle at 50% 40%, #111 0%, #000 100%);
-  color: #fff;
-  font-family: 'JetBrains Mono', monospace;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
+    background: radial-gradient(circle at 50% 40%, #111 0%, #000 100%);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
 /* Navbar */
 .main-nav {
-  position: fixed;
-  top: 25px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 50px;
-  padding: 8px 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    padding: 8px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .main-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
 }
 
 .main-nav a {
-  text-decoration: none;
-  color: rgba(255,255,255,0.8);
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 8px 16px;
-  border-radius: 40px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.3s ease;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 16px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
 }
 
 .main-nav a:hover {
-  color: #fff;
-  background: rgba(255,255,255,0.1);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .main-nav li.active a {
-  color: #111;
-  background: #fff;
-  font-weight: 600;
-  box-shadow: 0 2px 10px rgba(255,255,255,0.3);
+    color: #111;
+    background: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
 }
 
 /* Code intro (updated) */
 .code-intro {
-  background: transparent; /* removed black background */
-  color: #dcdcdc;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.5rem; /* increased font size */
-  padding: 80px 20px;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+    background: transparent;
+    color: #dcdcdc;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem; /* increased font size */
+    padding: 80px 20px;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 #code-display {
-  border-left: 4px solid #00ff99;
-  padding-left: 15px;
-  white-space: pre-wrap;
-  overflow: hidden;
-  width: 0;
-  animation: typingCode 6s steps(50, end) forwards, blinkCode 0.8s step-end infinite alternate;
+    border-left: none;
+    padding-left: 15px;
+    white-space: pre-wrap;
+    overflow: hidden;
+    width: 0;
+    animation: typingCode 6s steps(50, end) forwards;
 }
 
 @keyframes typingCode {
-  from { width: 0; }
-  to { width: 100%; }
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
 }
 
-@keyframes blinkCode {
-  50% { border-color: transparent; }
-}
-
-.code-intro pre {
-  text-shadow: 0 0 20px rgba(0,255,150,0.4);
-}
 
 /* Hero */
 .hero {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  opacity: 0;
+  transform: none;
+  transition: none;
 }
 
 .typing-effect {
@@ -112,66 +106,78 @@ body {
   font-family: 'JetBrains Mono', monospace;
   white-space: nowrap;
   overflow: hidden;
-  border-right: 3px solid #00ff99;
-  width: 0;
-  animation: typingName 3s steps(20, end) forwards, blinkName 0.6s step-end infinite alternate;
+  border-right: none;
+  width: auto;
 }
 
+
 @keyframes typingName {
-  from { width: 0; }
-  to { width: 15ch; }
+    from {
+        width: 0;
+    }
+    to {
+        width: 15ch;
+    }
 }
 
 @keyframes blinkName {
-  50% { border-color: transparent; }
+    50% {
+        border-color: transparent;
+    }
 }
 
 .subtitle {
-  font-size: 1.4rem;
-  opacity: 0.8;
-  margin-top: 20px;
+    font-size: 1.4rem;
+    opacity: 0.8;
+    margin-top: 20px;
 }
 
 /* Sections */
 section {
-  padding: 100px 20px;
-  text-align: center;
+    padding: 100px 20px;
+    text-align: center;
 }
 
 /* Projects */
 .project-grid {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
 }
 
 .project {
-  background: #222;
-  padding: 2rem;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+    background: #222;
+    padding: 2rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
 }
 
 .project:hover {
-  transform: translateY(-10px);
-  background: #333;
+    transform: translateY(-10px);
+    background: #333;
 }
 
 /* Custom cursor */
 .cursor {
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #00ff99;
-  border-radius: 50%;
-  pointer-events: none;
-  mix-blend-mode: difference;
-  transition: transform 0.1s ease;
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #00ff99;
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    transition: transform 0.1s ease;
 }
 
 /* Override Prism.js default background */
 .code-intro pre[class*="language-"],
 .code-intro code[class*="language-"] {
-  background: transparent !important;
-  box-shadow: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.hero {
+  opacity: 0; /* invisible until GSAP animates it */
+  transform: translateY(100px);
+  transition: none;
 }
