@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // --- Utilities ---
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
   // --- Code intro typing (leave as is) ---
   const codeDisplay = document.getElementById("code-display");
   const codeLines = [
@@ -37,21 +41,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- GSAP reveal .hero only when scrolled into view ---
-  gsap.registerPlugin(ScrollTrigger);
-  gsap.to(".hero", {
-    opacity: 1,
-    y: 0,
-    duration: 1.2,
-    ease: "power3.out",
-    scrollTrigger: {
-      trigger: ".hero",
-      start: "top 80%",
-      once: true, // играе еднократно
-      onEnter: () => {
-        typeName(); // стартираме typing на името точно при влизане
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.to(".hero", {
+      opacity: 1,
+      y: 0,
+      duration: 1.2,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top 80%",
+        once: true,
+        onEnter: () => {
+          typeName();
+        }
       }
-    }
-  });
+    });
+
+    // Reveal animations for sections/cards
+    const revealTargets = gsap.utils.toArray(
+      ".projects .project, .services .service, .about, .faq details, .contact, .footer"
+    );
+    revealTargets.forEach((el) => {
+      gsap.from(el, {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 85%",
+          once: true
+        }
+      });
+    });
+  }
 
   // --- Custom cursor (optional, as you had) ---
   const cursor = document.querySelector(".cursor");
@@ -60,4 +84,49 @@ document.addEventListener("DOMContentLoaded", () => {
       cursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
     });
   }
+
+  // --- Footer year ---
+  const yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // --- Active nav item on scroll ---
+  const navLinks = $$(".main-nav a");
+  const sections = $$("section[id]");
+  const linkById = new Map();
+  navLinks.forEach((a) => {
+    const id = (a.getAttribute("href") || "").replace("#", "");
+    if (id) linkById.set(id, a);
+  });
+
+  const setActive = (id) => {
+    $$(".main-nav li").forEach((li) => li.classList.remove("active"));
+    const link = linkById.get(id);
+    if (!link) return;
+    const li = link.closest("li");
+    if (li) li.classList.add("active");
+  };
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActive(entry.target.id);
+        }
+      });
+    },
+    { threshold: 0.6 }
+  );
+  sections.forEach((sec) => io.observe(sec));
+
+  // --- Smooth scroll for nav links (enhanced) ---
+  navLinks.forEach((a) => {
+    a.addEventListener("click", (e) => {
+      const href = a.getAttribute("href") || "";
+      if (!href.startsWith("#")) return;
+      const target = $(href);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 });

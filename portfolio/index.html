@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plamen Nikolov | Portfolio</title>
+  <meta name="description" content="Portfolio of Plamen Nikolov — Python developer focused on Flask, AI, and web automation. View selected projects, services, and ways to get in touch." />
+  <meta name="theme-color" content="#0b0b0b" />
+  <meta property="og:title" content="Plamen Nikolov | Portfolio" />
+  <meta property="og:description" content="Python Developer & Web Enthusiast — Flask, AI, Web Automation" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/assets/og-image.png" />
+  <meta property="og:url" content="https://plamen-nikolov.com/" />
 
   <!-- Font -->
   <link href="https://fonts.cdnfonts.com/css/jetbrains-mono" rel="stylesheet">
@@ -40,29 +47,126 @@
   <section class="hero">
     <h1 class="typing-effect" id="dev-name"></h1>
     <p class="subtitle">Python Developer & Web Enthusiast</p>
+    <div class="hero-cta">
+      <a class="btn primary" href="#projects"><i class="fa-regular fa-folder-open"></i> View Projects</a>
+      <a class="btn" href="mailto:hi@plamen.dev"><i class="fa-regular fa-envelope"></i> Contact</a>
+      <a class="btn ghost" href="/assets/Plamen-Nikolov-CV.pdf" target="_blank" rel="noopener">Download CV</a>
+    </div>
   </section>
 
   <!-- About -->
   <section class="about" id="about">
     <h2>About Me</h2>
     <p>I love building creative, interactive, and efficient digital experiences.</p>
+    <ul class="about-highlights">
+      <li><i class="fa-solid fa-circle-check"></i> 5+ years with Python and Flask</li>
+      <li><i class="fa-solid fa-circle-check"></i> Automation, scraping, API integrations</li>
+      <li><i class="fa-solid fa-circle-check"></i> Deployed cloud apps, CI/CD, containers</li>
+    </ul>
+    <div class="socials">
+      <a aria-label="GitHub" href="https://github.com/" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
+      <a aria-label="LinkedIn" href="https://www.linkedin.com/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
+      <a aria-label="X" href="https://x.com/" target="_blank" rel="noopener"><i class="fa-brands fa-x-twitter"></i></a>
+    </div>
   </section>
 
   <!-- Projects -->
   <section class="projects" id="projects">
     <h2>Selected Projects</h2>
     <div class="project-grid">
-      <div class="project">Project One</div>
-      <div class="project">Project Two</div>
-      <div class="project">Project Three</div>
+      <article class="project">
+        <div class="project-head">
+          <h3>AI-Powered Research Assistant</h3>
+          <div class="badges">
+            <span>Python</span><span>Flask</span><span>OpenAI</span>
+          </div>
+        </div>
+        <p>Context-aware assistant that summarizes papers, extracts key findings, and generates citations.</p>
+        <div class="actions">
+          <a class="btn small" href="#" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Code</a>
+          <a class="btn small ghost" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Live</a>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project-head">
+          <h3>Automation Suite</h3>
+          <div class="badges">
+            <span>Python</span><span>Playwright</span><span>Docker</span>
+          </div>
+        </div>
+        <p>Robust web automation toolkit for scraping, monitoring, and scheduled reporting.</p>
+        <div class="actions">
+          <a class="btn small" href="#" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Code</a>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project-head">
+          <h3>Portfolio Site</h3>
+          <div class="badges">
+            <span>HTML</span><span>CSS</span><span>GSAP</span>
+          </div>
+        </div>
+        <p>This interactive portfolio with code-typing intro, smooth animations, and responsive layout.</p>
+        <div class="actions">
+          <a class="btn small ghost" href="#home"><i class="fa-regular fa-eye"></i> Preview</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="services" id="services">
+    <h2>Services</h2>
+    <div class="service-grid">
+      <div class="service">
+        <i class="fa-solid fa-robot"></i>
+        <h3>Automation & Bots</h3>
+        <p>Web automation, scraping, data pipelines, and scheduled jobs.</p>
+      </div>
+      <div class="service">
+        <i class="fa-solid fa-server"></i>
+        <h3>Backend APIs</h3>
+        <p>Flask/FastAPI microservices, REST, authentication, and integrations.</p>
+      </div>
+      <div class="service">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <h3>AI Features</h3>
+        <p>LLM integrations, semantic search, and intelligent assistants.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <h2>FAQ</h2>
+    <div class="accordion">
+      <details>
+        <summary>Are you available for freelance work?</summary>
+        <p>Yes. I take on selected projects with clear scope and timelines.</p>
+      </details>
+      <details>
+        <summary>What is your typical tech stack?</summary>
+        <p>Python, Flask/FastAPI, Playwright, PostgreSQL, Redis, Docker, and cloud platforms.</p>
+      </details>
+      <details>
+        <summary>How can we start a project?</summary>
+        <p>Send an email with goals, timeline, and budget. I’ll reply with next steps.</p>
+      </details>
     </div>
   </section>
 
   <!-- Contact -->
   <section class="contact" id="contact">
     <h2>Let's Work Together</h2>
-    <p>hi@plamen.dev</p>
+    <p><a class="email" href="mailto:hi@plamen.dev">hi@plamen.dev</a></p>
+    <p class="muted">Based in the Netherlands • Open to remote</p>
   </section>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Plamen Nikolov. All rights reserved.</p>
+  </footer>
 
   <!-- Cursor -->
   <div class="cursor"></div>
