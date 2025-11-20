@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Reveal animations for sections/cards
     const revealTargets = gsap.utils.toArray(
-      ".projects .project, .services .service, .about, .faq details, .contact, .footer"
+      ".projects .project, .services .service, .about, .stats .stat, .faq details, .contact, .footer"
     );
     revealTargets.forEach((el) => {
       gsap.from(el, {
@@ -99,9 +99,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const setActive = (id) => {
-    $$(".main-nav li").forEach((li) => li.classList.remove("active"));
     const link = linkById.get(id);
-    if (!link) return;
+    if (!link) return; // only update when section exists in navbar
+    $$(".main-nav li").forEach((li) => li.classList.remove("active"));
     const li = link.closest("li");
     if (li) li.classList.add("active");
   };
@@ -129,4 +129,98 @@ document.addEventListener("DOMContentLoaded", () => {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
+
+  // --- Theme toggle (dark/light) ---
+  const themeBtn = $("#theme-toggle");
+  const root = document.documentElement;
+  const applyThemeIcon = () => {
+    if (!themeBtn) return;
+    const icon = themeBtn.querySelector("i");
+    const isLight = root.getAttribute("data-theme") === "light";
+    if (icon) {
+      icon.classList.toggle("fa-moon", !isLight);
+      icon.classList.toggle("fa-sun", isLight);
+    }
+    themeBtn.setAttribute("aria-pressed", String(isLight));
+    themeBtn.title = isLight ? "Switch to dark" : "Switch to light";
+  };
+  // Initialize theme from storage or OS preference
+  const stored = localStorage.getItem("theme");
+  if (stored === "light") {
+    root.setAttribute("data-theme", "light");
+  } else if (stored === "dark") {
+    root.removeAttribute("data-theme");
+  } else {
+    // Respect OS preference if no stored choice
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+      root.setAttribute("data-theme", "light");
+    } else {
+      root.removeAttribute("data-theme");
+    }
+  }
+  applyThemeIcon();
+  themeBtn?.addEventListener("click", () => {
+    const isLight = root.getAttribute("data-theme") === "light";
+    if (isLight) {
+      root.removeAttribute("data-theme");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.setAttribute("data-theme", "light");
+      localStorage.setItem("theme", "light");
+    }
+    applyThemeIcon();
+  });
+
+  // --- Scroll to top button ---
+  const scrollTopBtn = $("#scrollTop");
+  const onScroll = () => {
+    if (!scrollTopBtn) return;
+    if (window.scrollY > 300) {
+      scrollTopBtn.classList.add("show");
+    } else {
+      scrollTopBtn.classList.remove("show");
+    }
+  };
+  document.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+  scrollTopBtn?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // --- Animated stats counters ---
+  const counters = $$(".stat .num");
+  const counted = new WeakSet();
+  function countTo(el) {
+    if (!el || counted.has(el)) return;
+    counted.add(el);
+    const target = parseInt(el.getAttribute("data-target"), 10) || 0;
+    const duration = 1200;
+    const start = performance.now();
+    const from = 0;
+    function frame(t) {
+      const p = Math.min(1, (t - start) / duration);
+      const val = Math.floor(from + (target - from) * (p < 0 ? 0 : p));
+      el.textContent = String(val);
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  if (counters.length) {
+    if ("IntersectionObserver" in window) {
+      const io2 = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) countTo(e.target.querySelector('.num') || e.target);
+          });
+        },
+        { threshold: 0.6 }
+      );
+      $$(".stats .stat").forEach((box) => io2.observe(box));
+    } else {
+      // Fallback: set immediately
+      counters.forEach((el) => {
+        el.textContent = el.getAttribute("data-target") || "0";
+      });
+    }
+  }
 });

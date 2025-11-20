@@ -12,6 +12,23 @@
   <meta property="og:image" content="/assets/og-image.png" />
   <meta property="og:url" content="https://plamen-nikolov.com/" />
 
+  <!-- Prevent theme flash: set data-theme ASAP based on saved or OS preference -->
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('theme');
+        var root = document.documentElement;
+        if (t === 'light') {
+          root.setAttribute('data-theme', 'light');
+        } else if (t === 'dark') {
+          root.removeAttribute('data-theme');
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+          root.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <!-- Font -->
   <link href="https://fonts.cdnfonts.com/css/jetbrains-mono" rel="stylesheet">
 
@@ -26,31 +43,146 @@
 </head>
 
 <body>
+  <!-- Blurry code-symbol background -->
+  <div class="bg-svg" aria-hidden="true">
+    <svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <filter id="blur2"><feGaussianBlur stdDeviation="2" /></filter>
+        <filter id="blur4"><feGaussianBlur stdDeviation="4" /></filter>
+        <linearGradient id="bggrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0b0b0b"/>
+          <stop offset="100%" stop-color="#000000"/>
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#bggrad)"/>
+      <!-- scattered, softly blurred code glyphs -->
+      <g fill="#ffffff" fill-opacity="0.07" font-family="JetBrains Mono, monospace">
+        <text class="f1" x="8%" y="18%" font-size="96" filter="url(#blur4)">{</text>
+        <text class="f2" x="18%" y="28%" font-size="64" filter="url(#blur2)">}</text>
+        <text class="f3" x="28%" y="22%" font-size="80" filter="url(#blur4)">&lt;</text>
+        <text class="f4" x="38%" y="32%" font-size="72" filter="url(#blur2)">&gt;</text>
+        <text class="f5" x="12%" y="56%" font-size="64" filter="url(#blur2)">[</text>
+        <text class="f6" x="20%" y="66%" font-size="96" filter="url(#blur4)">]</text>
+        <text class="f7" x="6%" y="84%" font-size="88" filter="url(#blur4)">(</text>
+        <text class="f8" x="16%" y="90%" font-size="72" filter="url(#blur2)">)</text>
+
+        <text class="f9" x="54%" y="18%" font-size="90" filter="url(#blur4)">/</text>
+        <text class="f10" x="64%" y="26%" font-size="64" filter="url(#blur2)">*</text>
+        <text class="f11" x="74%" y="20%" font-size="84" filter="url(#blur4)">;</text>
+        <text class="f12" x="84%" y="30%" font-size="72" filter="url(#blur2)">=</text>
+
+        <text class="f13" x="48%" y="56%" font-size="110" filter="url(#blur4)">{</text>
+        <text class="f14" x="58%" y="66%" font-size="80" filter="url(#blur2)">}</text>
+        <text class="f15" x="68%" y="58%" font-size="96" filter="url(#blur4)">&lt;</text>
+        <text class="f16" x="78%" y="68%" font-size="82" filter="url(#blur2)">&gt;</text>
+        <text class="f17" x="88%" y="62%" font-size="74" filter="url(#blur2)">:</text>
+
+        <text class="f18" x="30%" y="78%" font-size="70" filter="url(#blur2)">/</text>
+        <text class="f19" x="40%" y="88%" font-size="90" filter="url(#blur4)">#</text>
+        <text class="f20" x="50%" y="82%" font-size="76" filter="url(#blur2)">_</text>
+      </g>
+    </svg>
+  </div>
   <!-- Navigation -->
   <nav class="main-nav">
     <ul>
       <li class="active"><a href="#home"><i class="fa-solid fa-house"></i> Home</a></li>
       <li><a href="#projects"><i class="fa-regular fa-folder-open"></i> Projects</a></li>
+      <li><a href="#skills"><i class="fa-solid fa-layer-group"></i> Skills</a></li>
+      <li><a href="#experience"><i class="fa-solid fa-briefcase"></i> Experience</a></li>
       <li><a href="#about"><i class="fa-regular fa-user"></i> About</a></li>
       <li><a href="#faq"><i class="fa-regular fa-circle-question"></i> FAQ</a></li>
       <li><a href="#contact"><i class="fa-regular fa-envelope"></i> Contact</a></li>
-      <li><a href="#services"><i class="fa-solid fa-briefcase"></i> Services</a></li>
+      <li><a href="#services"><i class="fa-solid fa-screwdriver-wrench"></i> Services</a></li>
+      <li>
+        <button id="theme-toggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </li>
     </ul>
   </nav>
 
-  <!-- Code intro -->
-  <section class="code-intro" id="home">
+  <!-- Hero (moved to the top as first visible section) -->
+  <section class="hero" id="home">
+    <div class="container hero-wrap">
+      <div class="hero-content">
+        <p class="eyebrow">Hi, I’m</p>
+        <h1 class="display" id="dev-name"></h1>
+        <p class="lead">I build fast, reliable backends and automation with Python.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#projects"><i class="fa-regular fa-folder-open"></i> View Work</a>
+          <a class="btn" href="mailto:hi@plamen.dev"><i class="fa-regular fa-envelope"></i> Contact</a>
+          <a class="btn ghost" href="/assets/Plamen-Nikolov-CV.pdf" target="_blank" rel="noopener">Resume</a>
+        </div>
+        <ul class="tech-badges" aria-label="Technologies">
+          <li><i class="fa-brands fa-python" aria-hidden="true"></i><span>Python</span></li>
+          <li><i class="fa-solid fa-flask" aria-hidden="true"></i><span>Flask</span></li>
+          <li><i class="fa-solid fa-bolt" aria-hidden="true"></i><span>FastAPI</span></li>
+          <li><i class="fa-solid fa-vial" aria-hidden="true"></i><span>Playwright</span></li>
+        </ul>
+        <div class="socials hero-socials">
+          <a aria-label="GitHub" href="https://github.com/" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
+          <a aria-label="LinkedIn" href="https://www.linkedin.com/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
+          <a aria-label="X" href="https://x.com/" target="_blank" rel="noopener"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+      <div class="hero-aside">
+        <div class="avatar placeholder" role="img" aria-label="Avatar placeholder"></div>
+      </div>
+    </div>
+    <a class="scroll-indicator" href="#projects" aria-label="Scroll to projects">
+      <span class="chev"></span>
+    </a>
+  </section>
+
+  <!-- Code intro (moved below hero) -->
+  <section class="code-intro" id="intro">
     <pre><code id="code-display" class="language-python"></code></pre>
   </section>
 
-  <!-- Hero -->
-  <section class="hero">
-    <h1 class="typing-effect" id="dev-name"></h1>
-    <p class="subtitle">Python Developer & Web Enthusiast</p>
-    <div class="hero-cta">
-      <a class="btn primary" href="#projects"><i class="fa-regular fa-folder-open"></i> View Projects</a>
-      <a class="btn" href="mailto:hi@plamen.dev"><i class="fa-regular fa-envelope"></i> Contact</a>
-      <a class="btn ghost" href="/assets/Plamen-Nikolov-CV.pdf" target="_blank" rel="noopener">Download CV</a>
+  <!-- Skills (chips) -->
+  <section class="skills" id="skills">
+    <div class="container">
+      <h2>Skills</h2>
+      <ul class="chip-cloud" aria-label="Skills">
+        <li>Python</li><li>Flask</li><li>FastAPI</li><li>Playwright</li><li>PostgreSQL</li>
+        <li>Docker</li><li>Redis</li><li>CI/CD</li><li>REST APIs</li><li>Celery</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Experience (timeline-lite) -->
+  <section class="experience" id="experience">
+    <div class="container">
+      <h2>Experience</h2>
+      <ol class="xp-list">
+        <li>
+          <div class="xp-item">
+            <div class="xp-head">
+              <span class="role">Senior Python Developer</span>
+              <span class="company">• Freelance</span>
+              <span class="dates">2023 — Present</span>
+            </div>
+            <ul class="xp-bullets">
+              <li>Built automation bots and APIs used by multiple clients.</li>
+              <li>Improved reliability and observability with Dockerized stacks.</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="xp-item">
+            <div class="xp-head">
+              <span class="role">Backend Engineer</span>
+              <span class="company">• Acme Co.</span>
+              <span class="dates">2021 — 2023</span>
+            </div>
+            <ul class="xp-bullets">
+              <li>Designed and shipped Flask/FastAPI microservices at scale.</li>
+              <li>Led migration to Playwright-based automation suite.</li>
+            </ul>
+          </div>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -67,6 +199,28 @@
       <a aria-label="GitHub" href="https://github.com/" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
       <a aria-label="LinkedIn" href="https://www.linkedin.com/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
       <a aria-label="X" href="https://x.com/" target="_blank" rel="noopener"><i class="fa-brands fa-x-twitter"></i></a>
+    </div>
+  </section>
+
+  <!-- Stats (animated counters) -->
+  <section class="stats" id="stats">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="num" data-target="5">0</div>
+        <div class="label">Years Experience</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-target="20">0</div>
+        <div class="label">Projects</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-target="8">0</div>
+        <div class="label">Automation Bots</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-target="12">0</div>
+        <div class="label">Happy Clients</div>
+      </div>
     </div>
   </section>
 
@@ -170,6 +324,11 @@
 
   <!-- Cursor -->
   <div class="cursor"></div>
+
+  <!-- Scroll to top -->
+  <button id="scrollTop" class="scroll-top" aria-label="Scroll to top" title="Scroll to top">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
