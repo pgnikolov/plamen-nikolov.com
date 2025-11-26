@@ -21,7 +21,8 @@ body::after {
   /* ... */
   background-image: url("https://img.freepik.com/premium-photo/white-dust-scratches-black-background_279525-2.jpg?w=640");
   background-repeat: repeat;
-  opacity: 0.2;
+  /* Reduce overlay darkness so the background isn't too dark */
+  opacity: 0.08;
   mix-blend-mode: multiply;
   pointer-events: none;
   z-index: 1;

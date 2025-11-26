@@ -49,9 +49,10 @@
       <defs>
         <filter id="blur2"><feGaussianBlur stdDeviation="2" /></filter>
         <filter id="blur4"><feGaussianBlur stdDeviation="4" /></filter>
-        <linearGradient id="bggrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#0b0b0b"/>
-          <stop offset="100%" stop-color="#000000"/>
+        <!-- Deep near-black gradient background (top → bottom) -->
+        <linearGradient id="bggrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#061B16"/>
+          <stop offset="100%" stop-color="#020A08"/>
         </linearGradient>
       </defs>
       <rect width="100%" height="100%" fill="url(#bggrad)"/>
@@ -87,11 +88,9 @@
   <nav class="main-nav">
     <ul>
       <li class="active"><a href="#home"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="#about"><i class="fa-regular fa-user"></i> About</a></li>
       <li><a href="#projects"><i class="fa-regular fa-folder-open"></i> Projects</a></li>
       <li><a href="#skills"><i class="fa-solid fa-layer-group"></i> Skills</a></li>
-      <li><a href="#experience"><i class="fa-solid fa-briefcase"></i> Experience</a></li>
-      <li><a href="#about"><i class="fa-regular fa-user"></i> About</a></li>
-      <li><a href="#faq"><i class="fa-regular fa-circle-question"></i> FAQ</a></li>
       <li><a href="#contact"><i class="fa-regular fa-envelope"></i> Contact</a></li>
       <li><a href="#services"><i class="fa-solid fa-screwdriver-wrench"></i> Services</a></li>
       <li>
@@ -108,7 +107,7 @@
       <div class="hero-content">
         <p class="eyebrow">Hi, I’m</p>
         <h1 class="display" id="dev-name"></h1>
-        <p class="lead">I build fast, reliable backends and automation with Python.</p>
+        <p class="lead" id="dev-tagline">A passionate Python developer from Bulgaria, focused on building efficient solutions and optimizing workflows.</p>
         <div class="hero-cta">
           <a class="btn primary" href="#projects"><i class="fa-regular fa-folder-open"></i> View Work</a>
           <a class="btn" href="mailto:hi@plamen.dev"><i class="fa-regular fa-envelope"></i> Contact</a>
@@ -126,13 +125,32 @@
           <a aria-label="X" href="https://x.com/" target="_blank" rel="noopener"><i class="fa-brands fa-x-twitter"></i></a>
         </div>
       </div>
-      <div class="hero-aside">
-        <div class="avatar placeholder" role="img" aria-label="Avatar placeholder"></div>
-      </div>
+      
     </div>
     <a class="scroll-indicator" href="#projects" aria-label="Scroll to projects">
       <span class="chev"></span>
     </a>
+  </section>
+
+  <!-- About -->
+  <section class="about" id="about" aria-labelledby="about-title">
+    <div class="container">
+      <h2 id="about-title">About Me</h2>
+      <div class="prose">
+        <p>I’m currently expanding my expertise as a student at SoftUni, diving deep into Python and modern software development.</p>
+        <p>I bring a practical, problem-solving mindset from my professional experience in industrial environments, which I apply to my development work.</p>
+        <p>My goal is to write clean, maintainable, and efficient code that solves real-world problems.</p>
+        <p>I’m constantly learning and I'm eager to explore new technologies and best practices.</p>
+        <p>I’m open to collaborating on interesting Python projects and contributing to the developer community.</p>
+
+        <h3 class="subheading">A Glimpse Into My Personal Life</h3>
+        <ul class="about-list">
+          <li>Exploring new places and cultures.</li>
+          <li>Hiking with my dog, enjoying the great outdoors.</li>
+          <li>Capturing moments through my lens, blending my love for technology and art in photography.</li>
+        </ul>
+      </div>
+    </div>
   </section>
 
   <!-- Code intro (moved below hero) -->

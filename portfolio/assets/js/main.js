@@ -3,6 +3,62 @@ document.addEventListener("DOMContentLoaded", () => {
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
+  // --- TextScramble (for hero name) ---
+  // Lightweight text scrambling animation adapted for the hero name
+  class TextScramble {
+    constructor(el) {
+      this.el = el;
+      this.chars = '!<>-_\\/[]{}—=+*^?#________';
+      this.update = this.update.bind(this);
+    }
+    setText(newText) {
+      const oldText = this.el.textContent || "";
+      const length = Math.max(oldText.length, newText.length);
+      const promise = new Promise((resolve) => (this.resolve = resolve));
+      this.queue = [];
+      for (let i = 0; i < length; i++) {
+        const from = oldText[i] || '';
+        const to = newText[i] || '';
+        const start = Math.floor(Math.random() * 40);
+        const end = start + Math.floor(Math.random() * 40);
+        this.queue.push({ from, to, start, end });
+      }
+      cancelAnimationFrame(this.frameRequest);
+      this.frame = 0;
+      this.update();
+      return promise;
+    }
+    update() {
+      let output = '';
+      let complete = 0;
+      for (let i = 0, n = this.queue.length; i < n; i++) {
+        let { from, to, start, end, char } = this.queue[i];
+        if (this.frame >= end) {
+          complete++;
+          output += to;
+        } else if (this.frame >= start) {
+          if (!char || Math.random() < 0.28) {
+            char = this.randomChar();
+            this.queue[i].char = char;
+          }
+          output += `<span class="dud">${char}</span>`;
+        } else {
+          output += from;
+        }
+      }
+      this.el.innerHTML = output;
+      if (complete === this.queue.length) {
+        this.resolve();
+      } else {
+        this.frameRequest = requestAnimationFrame(this.update);
+        this.frame++;
+      }
+    }
+    randomChar() {
+      return this.chars[Math.floor(Math.random() * this.chars.length)];
+    }
+  }
+
   // --- Code intro typing (leave as is) ---
   const codeDisplay = document.getElementById("code-display");
   const codeLines = [
@@ -23,22 +79,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 
-  // --- Name typing: triggered on scroll into view ---
+  // --- Hero name + tagline: scramble effect triggered on scroll into view ---
   const devName = document.getElementById("dev-name");
   const nameStr = "Plamen Nikolov";
-  let j = 0;
-  let nameTyped = false;
-  function typeName() {
-    if (nameTyped) return;
-    nameTyped = true;
-    (function tick() {
-      if (j < nameStr.length) {
-        devName.textContent += nameStr.charAt(j);
-        j++;
-        setTimeout(tick, 100);
+  const devTagline = document.getElementById("dev-tagline");
+  const taglineStr = devTagline ? devTagline.textContent : "";
+  let heroAnimated = false;
+
+  const animateHero = () => {
+    if (heroAnimated) return;
+    heroAnimated = true;
+    if (!devName) return;
+
+    // Respect reduced motion
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      devName.textContent = nameStr;
+      if (devTagline) devTagline.textContent = taglineStr;
+      return;
+    }
+
+    // Prepare: clear current text so the scramble builds from empty
+    devName.textContent = "";
+    if (devTagline) devTagline.textContent = "";
+
+    const fxName = new TextScramble(devName);
+    const fxTag = devTagline ? new TextScramble(devTagline) : null;
+
+    // Animate name first, then tagline shortly after
+    fxName.setText(nameStr).then(() => {
+      if (fxTag && taglineStr) {
+        setTimeout(() => fxTag.setText(taglineStr), 200);
       }
-    })();
-  }
+    });
+  };
 
   // --- GSAP reveal .hero only when scrolled into view ---
   if (window.gsap && window.ScrollTrigger) {
@@ -53,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         start: "top 80%",
         once: true,
         onEnter: () => {
-          typeName();
+          animateHero();
         }
       }
     });
@@ -75,6 +149,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     });
+  }
+
+  // Fallback: If GSAP/ScrollTrigger isn't available, animate when hero is visible using IntersectionObserver
+  if (!window.gsap || !window.ScrollTrigger) {
+    const hero = $(".hero");
+    if (hero) {
+      const ioName = new IntersectionObserver((entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateHero();
+            obs.disconnect();
+          }
+        });
+      }, { threshold: 0.5 });
+      ioName.observe(hero);
+    } else {
+      // As a last resort, run after a tiny delay
+      setTimeout(animateHero, 600);
+    }
   }
 
   // --- Custom cursor (optional, as you had) ---
@@ -215,6 +308,58 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         { threshold: 0.6 }
       );
+
+      // --- Gentle background parallax (2–3%) to add depth ---
+      (function initParallax() {
+        const bg = document.querySelector('.bg-svg');
+        if (!bg) return;
+
+        const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced) return;
+
+        // Use GSAP ScrollTrigger if available for smooth, scrubbed parallax
+        if (window.gsap && window.ScrollTrigger) {
+          gsap.registerPlugin(ScrollTrigger);
+          // Move subtly opposite to scroll (max about 2vw/3vh over full page)
+          gsap.to(bg, {
+            xPercent: -2, // ~2% of viewport width
+            yPercent: -3, // ~3% of viewport height
+            ease: 'none',
+            scrollTrigger: {
+              trigger: document.body,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: true
+            }
+          });
+          return;
+        }
+
+        // Vanilla fallback: translate based on page scroll progress
+        let ticking = false;
+        const maxX = () => window.innerWidth * 0.02;  // 2% of viewport width
+        const maxY = () => window.innerHeight * 0.03; // 3% of viewport height
+
+        const update = () => {
+          const doc = document.documentElement;
+          const maxScroll = doc.scrollHeight - window.innerHeight;
+          const p = maxScroll > 0 ? (window.scrollY || doc.scrollTop) / maxScroll : 0;
+          const x = -maxX() * p;
+          const y = -maxY() * p;
+          bg.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          ticking = false;
+        };
+
+        const onScroll = () => {
+          if (!ticking) {
+            window.requestAnimationFrame(update);
+            ticking = true;
+          }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', () => update());
+        update();
+      })();
       $$(".stats .stat").forEach((box) => io2.observe(box));
     } else {
       // Fallback: set immediately
