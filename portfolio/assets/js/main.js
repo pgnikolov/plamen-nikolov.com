@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
           gsap.registerPlugin(ScrollTrigger);
           // Move subtly opposite to scroll (max about 2vw/3vh over full page)
           gsap.to(bg, {
-            xPercent: -2, // ~2% of viewport width
+            // Only vertical parallax; no horizontal movement
             yPercent: -3, // ~3% of viewport height
             ease: 'none',
             scrollTrigger: {
@@ -335,18 +335,17 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Vanilla fallback: translate based on page scroll progress
+        // Vanilla fallback: translate based on page scroll progress (vertical only)
         let ticking = false;
-        const maxX = () => window.innerWidth * 0.02;  // 2% of viewport width
         const maxY = () => window.innerHeight * 0.03; // 3% of viewport height
 
         const update = () => {
           const doc = document.documentElement;
           const maxScroll = doc.scrollHeight - window.innerHeight;
           const p = maxScroll > 0 ? (window.scrollY || doc.scrollTop) / maxScroll : 0;
-          const x = -maxX() * p;
           const y = -maxY() * p;
-          bg.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          // Only move vertically
+          bg.style.transform = `translate3d(0px, ${y}px, 0)`;
           ticking = false;
         };
 
