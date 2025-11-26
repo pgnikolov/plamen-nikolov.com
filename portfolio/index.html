@@ -106,16 +106,30 @@
     <div class="container hero-wrap">
       <div class="hero-content">
         <p class="eyebrow">Hi, I’m</p>
-        <h1 class="display" id="dev-name"></h1>
-        <p class="lead" id="dev-tagline">A passionate Python developer from Bulgaria, focused on building efficient solutions and optimizing workflows.</p>
-        <ul class="tech-badges" aria-label="Technologies">
-          <li><i class="fa-brands fa-python" aria-hidden="true"></i><span>Python</span></li>
-          <li><i class="fa-solid fa-flask" aria-hidden="true"></i><span>Flask</span></li>
-          <li><i class="fa-solid fa-bolt" aria-hidden="true"></i><span>FastAPI</span></li>
-          <li><i class="fa-solid fa-vial" aria-hidden="true"></i><span>Playwright</span></li>
-        </ul>
+        <h1 class="display" id="dev-name">Plamen Nikolov</h1>
+        <p class="lead" id="dev-tagline">Python &amp; Web Developer · Building Efficient, Real-World Solutions</p>
+        <p class="lead hero-description">
+          I design and build scalable applications with clean architecture, strong performance, and a focus on solving real business challenges — not just writing code. Always learning, improving, and turning ideas into working products.
+        </p>
       </div>
-      
+      <aside class="hero-aside">
+        <div class="terminal-card" aria-label="Developer status snippet">
+          <div class="terminal-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="terminal-title">plamen@portfolio:~</span>
+          </div>
+          <div class="terminal-body">
+            <p><span class="prompt">&gt;</span> <span class="cmd">developer.status()</span></p>
+            <p class="value">"active"</p>
+            <p><span class="prompt">&gt;</span> <span class="cmd">stack.primary</span></p>
+            <p class="value">["Python", "Flask", "FastAPI"]</p>
+            <p><span class="prompt">&gt;</span> <span class="cmd">location</span></p>
+            <p class="value">"Netherlands"</p>
+          </div>
+        </div>
+      </aside>
     </div>
     <a class="scroll-indicator" href="#projects" aria-label="Scroll to projects">
       <span class="chev"></span>
@@ -161,7 +175,7 @@
   <section class="projects" id="projects">
     <h2>Selected Projects</h2>
     <div class="project-grid">
-      <article class="project">
+      <article class="project featured">
         <div class="project-head">
           <h3>AI-Powered Research Assistant</h3>
           <div class="badges">
@@ -243,21 +257,6 @@
     </div>
   </section>
 
-  <!-- About -->
-  <section class="about" id="about">
-    <h2>About Me</h2>
-    <p>I love building creative, interactive, and efficient digital experiences.</p>
-    <ul class="about-highlights">
-      <li><i class="fa-solid fa-circle-check"></i> 5+ years with Python and Flask</li>
-      <li><i class="fa-solid fa-circle-check"></i> Automation, scraping, API integrations</li>
-      <li><i class="fa-solid fa-circle-check"></i> Deployed cloud apps, CI/CD, containers</li>
-    </ul>
-    <div class="socials">
-      <a aria-label="GitHub" href="https://github.com/" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
-      <a aria-label="LinkedIn" href="https://www.linkedin.com/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
-      <a aria-label="X" href="https://x.com/" target="_blank" rel="noopener"><i class="fa-brands fa-x-twitter"></i></a>
-    </div>
-  </section>
 
   <!-- Stats (animated counters) -->
   <section class="stats" id="stats">
@@ -342,11 +341,11 @@
     <i class="fa-solid fa-arrow-up"></i>
   </button>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
-  <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-  <script src="assets/js/main.js"></script>
+  <!-- Scripts (deferred for faster paint) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <script defer src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script defer src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script defer src="assets/js/main.js"></script>
 </body>
 </html>

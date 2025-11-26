@@ -2,9 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Utilities ---
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+  const prefersReducedMotion =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // --- TextScramble (for hero name) ---
-  // Lightweight text scrambling animation adapted for the hero name
+  // --- TextScramble helper for hero copy ---
   class TextScramble {
     constructor(el) {
       this.el = el;
@@ -12,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.update = this.update.bind(this);
     }
     setText(newText) {
-      const oldText = this.el.textContent || "";
+      const oldText = this.el?.textContent || "";
       const length = Math.max(oldText.length, newText.length);
       const promise = new Promise((resolve) => (this.resolve = resolve));
       this.queue = [];
@@ -46,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
           output += from;
         }
       }
-      this.el.innerHTML = output;
+      if (this.el) this.el.innerHTML = output;
       if (complete === this.queue.length) {
         this.resolve();
       } else {
@@ -71,43 +72,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const fullText = codeLines.join("\n");
   let i = 0;
   (function typeCode() {
+    if (!codeDisplay) return;
     if (i < fullText.length) {
       codeDisplay.textContent = fullText.slice(0, i + 1);
-      Prism.highlightElement(codeDisplay);
       i++;
       setTimeout(typeCode, 35);
+    } else {
+      // Highlight once after typing completes to avoid repeated heavy work
+      if (window.Prism && typeof Prism.highlightElement === 'function') {
+        // Use requestIdleCallback when available to keep typing smooth
+        const run = () => Prism.highlightElement(codeDisplay);
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(run, { timeout: 500 });
+        } else {
+          requestAnimationFrame(run);
+        }
+      }
     }
   })();
 
-  // --- Hero name + tagline: scramble effect triggered on scroll into view ---
+  // --- Hero text scramble animation ---
   const devName = document.getElementById("dev-name");
-  const nameStr = "Plamen Nikolov";
   const devTagline = document.getElementById("dev-tagline");
-  const taglineStr = devTagline ? devTagline.textContent : "";
+  const nameStr = devName?.textContent || "";
+  const taglineStr = devTagline?.textContent || "";
   let heroAnimated = false;
 
   const animateHero = () => {
     if (heroAnimated) return;
     heroAnimated = true;
-    if (!devName) return;
-
-    // Respect reduced motion
-    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) {
-      devName.textContent = nameStr;
+    if (prefersReducedMotion) {
+      if (devName) devName.textContent = nameStr;
       if (devTagline) devTagline.textContent = taglineStr;
       return;
     }
-
-    // Prepare: clear current text so the scramble builds from empty
-    devName.textContent = "";
+    if (devName) devName.textContent = "";
     if (devTagline) devTagline.textContent = "";
-
-    const fxName = new TextScramble(devName);
+    const fxName = devName ? new TextScramble(devName) : null;
     const fxTag = devTagline ? new TextScramble(devTagline) : null;
-
-    // Animate name first, then tagline shortly after
-    fxName.setText(nameStr).then(() => {
+    fxName?.setText(nameStr).then(() => {
       if (fxTag && taglineStr) {
         setTimeout(() => fxTag.setText(taglineStr), 200);
       }
@@ -115,8 +118,12 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // --- GSAP reveal .hero only when scrolled into view ---
-  if (window.gsap && window.ScrollTrigger) {
+  const heroEl = $(".hero");
+  const canUseGsap = Boolean(window.gsap && window.ScrollTrigger && heroEl && !prefersReducedMotion);
+
+  if (canUseGsap) {
     gsap.registerPlugin(ScrollTrigger);
+    gsap.set(".hero", { opacity: 0, y: 100 });
     gsap.to(".hero", {
       opacity: 1,
       y: 0,
@@ -126,56 +133,64 @@ document.addEventListener("DOMContentLoaded", () => {
         trigger: ".hero",
         start: "top 80%",
         once: true,
-        onEnter: () => {
-          animateHero();
-        }
+        onEnter: () => animateHero()
       }
     });
 
     // Reveal animations for sections/cards
-    const revealTargets = gsap.utils.toArray(
-      ".projects .project, .services .service, .about, .stats .stat, .faq details, .contact, .footer"
-    );
-    revealTargets.forEach((el) => {
-      gsap.from(el, {
-        opacity: 0,
-        y: 40,
-        duration: 0.8,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 85%",
-          once: true
-        }
-      });
-    });
-  }
-
-  // Fallback: If GSAP/ScrollTrigger isn't available, animate when hero is visible using IntersectionObserver
-  if (!window.gsap || !window.ScrollTrigger) {
-    const hero = $(".hero");
-    if (hero) {
-      const ioName = new IntersectionObserver((entries, obs) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            animateHero();
-            obs.disconnect();
+    if (!prefersReducedMotion) {
+      const revealTargets = gsap.utils.toArray(
+        ".projects .project, .services .service, .about, .stats .stat, .faq details, .contact, .footer"
+      );
+      revealTargets.forEach((el) => {
+        gsap.from(el, {
+          opacity: 0,
+          y: 40,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+            once: true
           }
         });
-      }, { threshold: 0.5 });
-      ioName.observe(hero);
-    } else {
-      // As a last resort, run after a tiny delay
-      setTimeout(animateHero, 600);
+      });
     }
+  } else if (!prefersReducedMotion && heroEl && "IntersectionObserver" in window) {
+    const ioHero = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animateHero();
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    ioHero.observe(heroEl);
+  } else {
+    animateHero();
   }
 
   // --- Custom cursor (optional, as you had) ---
   const cursor = document.querySelector(".cursor");
   if (cursor) {
-    document.addEventListener("mousemove", (e) => {
-      cursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
-    });
+    if (prefersReducedMotion) {
+      cursor.remove();
+    } else {
+      let rafPending = false;
+      let lastX = 0, lastY = 0;
+      const render = () => {
+        rafPending = false;
+        cursor.style.transform = `translate(${lastX - 10}px, ${lastY - 10}px)`;
+      };
+      document.addEventListener("mousemove", (e) => {
+        lastX = e.clientX;
+        lastY = e.clientY;
+        if (!rafPending) {
+          rafPending = true;
+          requestAnimationFrame(render);
+        }
+      }, { passive: true });
+    }
   }
 
   // --- Footer year ---
@@ -299,66 +314,23 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(frame);
   }
   if (counters.length) {
-    if ("IntersectionObserver" in window) {
+    if (prefersReducedMotion) {
+      counters.forEach((el) => {
+        el.textContent = el.getAttribute("data-target") || "0";
+      });
+    } else if ("IntersectionObserver" in window) {
       const io2 = new IntersectionObserver(
         (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) countTo(e.target.querySelector('.num') || e.target);
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const targetEl = entry.target.querySelector('.num') || entry.target;
+              countTo(targetEl);
+              io2.unobserve(entry.target);
+            }
           });
         },
         { threshold: 0.6 }
       );
-
-      // --- Gentle background parallax (2–3%) to add depth ---
-      (function initParallax() {
-        const bg = document.querySelector('.bg-svg');
-        if (!bg) return;
-
-        const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (prefersReduced) return;
-
-        // Use GSAP ScrollTrigger if available for smooth, scrubbed parallax
-        if (window.gsap && window.ScrollTrigger) {
-          gsap.registerPlugin(ScrollTrigger);
-          // Move subtly opposite to scroll (max about 2vw/3vh over full page)
-          gsap.to(bg, {
-            // Only vertical parallax; no horizontal movement
-            yPercent: -3, // ~3% of viewport height
-            ease: 'none',
-            scrollTrigger: {
-              trigger: document.body,
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: true
-            }
-          });
-          return;
-        }
-
-        // Vanilla fallback: translate based on page scroll progress (vertical only)
-        let ticking = false;
-        const maxY = () => window.innerHeight * 0.03; // 3% of viewport height
-
-        const update = () => {
-          const doc = document.documentElement;
-          const maxScroll = doc.scrollHeight - window.innerHeight;
-          const p = maxScroll > 0 ? (window.scrollY || doc.scrollTop) / maxScroll : 0;
-          const y = -maxY() * p;
-          // Only move vertically
-          bg.style.transform = `translate3d(0px, ${y}px, 0)`;
-          ticking = false;
-        };
-
-        const onScroll = () => {
-          if (!ticking) {
-            window.requestAnimationFrame(update);
-            ticking = true;
-          }
-        };
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', () => update());
-        update();
-      })();
       $$(".stats .stat").forEach((box) => io2.observe(box));
     } else {
       // Fallback: set immediately
@@ -367,4 +339,46 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+
+  // --- Gentle background parallax (2–3%) to add depth ---
+  (function initParallax() {
+    const bg = document.querySelector('.bg-svg');
+    if (!bg || prefersReducedMotion) return;
+
+    if (window.gsap && window.ScrollTrigger) {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.to(bg, {
+        yPercent: -3,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: document.body,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: true
+        }
+      });
+      return;
+    }
+
+    let ticking = false;
+    const maxY = () => window.innerHeight * 0.03;
+    const update = () => {
+      const doc = document.documentElement;
+      const maxScroll = doc.scrollHeight - window.innerHeight;
+      const p = maxScroll > 0 ? (window.scrollY || doc.scrollTop) / maxScroll : 0;
+      const y = -maxY() * p;
+      bg.style.transform = `translate3d(0px, ${y}px, 0)`;
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => update());
+    update();
+  })();
 });
