@@ -98,23 +98,77 @@ document.addEventListener("DOMContentLoaded", () => {
   const taglineStr = devTagline?.textContent || "";
   let heroAnimated = false;
 
+  // Prevent initial flash of full description text: capture and clear early
+  (function preTypewriterSetup() {
+    const descEl = document.querySelector('.hero-description');
+    if (!descEl) return;
+    // Respect reduced motion: show immediately, no typing/hide
+    if (prefersReducedMotion) return;
+    const original = (descEl.textContent || '').trim();
+    // Store original so animator can use it later even after clearing
+    descEl.dataset.fullText = original;
+    // Clear the on-page text before any scroll/GSAP triggers to avoid flash
+    descEl.textContent = '';
+    // Hide until typing starts (CSS will keep it hidden)
+    descEl.classList.add('will-type');
+  })();
+
   const animateHero = () => {
     if (heroAnimated) return;
     heroAnimated = true;
+    const descEl = document.querySelector('.hero-description');
+    const descText = (descEl?.dataset.fullText || descEl?.textContent || '').trim();
     if (prefersReducedMotion) {
       if (devName) devName.textContent = nameStr;
       if (devTagline) devTagline.textContent = taglineStr;
+      // Render description immediately in reduced motion mode
+      if (descEl) {
+        descEl.textContent = descText;
+        descEl.classList.remove('will-type');
+        descEl.classList.remove('is-typing');
+      }
       return;
     }
     if (devName) devName.textContent = "";
     if (devTagline) devTagline.textContent = "";
     const fxName = devName ? new TextScramble(devName) : null;
     const fxTag = devTagline ? new TextScramble(devTagline) : null;
-    fxName?.setText(nameStr).then(() => {
-      if (fxTag && taglineStr) {
-        setTimeout(() => fxTag.setText(taglineStr), 200);
+    // Helper: simple delay
+    const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+    // Typewriter utility
+    const typeWriter = async (el, text, opts = {}) => {
+      if (!el) return;
+      const baseSpeed = opts.speed ?? 24; // ms per char baseline
+      const variance = opts.variance ?? 12; // random variance
+      const pauseChars = opts.pauseChars ?? ",.;:!?)—"; // add brief pauses after these
+      const pauseTime = opts.pause ?? 120;
+      const caretClass = opts.caretClass ?? 'typewriter-caret';
+      // Prepare element
+      el.textContent = '';
+      // Reveal and mark typing state
+      el.classList.remove('will-type');
+      el.classList.add('is-typing');
+      el.classList.add(caretClass);
+      for (let i = 0; i < text.length; i++) {
+        el.textContent = text.slice(0, i + 1);
+        const ch = text[i];
+        const jitter = Math.max(0, baseSpeed + Math.floor((Math.random() - 0.5) * 2 * variance));
+        await delay(jitter);
+        if (pauseChars.includes(ch)) {
+          await delay(pauseTime);
+        }
       }
-    });
+      // Done typing
+      el.classList.remove(caretClass);
+      el.classList.remove('is-typing');
+    };
+
+    // Chain: name scramble -> short delay -> tagline scramble -> typewriter description
+    let chain = Promise.resolve();
+    if (fxName && nameStr) chain = fxName.setText(nameStr);
+    chain = chain.then(() => delay(200));
+    if (fxTag && taglineStr) chain = chain.then(() => fxTag.setText(taglineStr));
+    chain.then(() => delay(180)).then(() => typeWriter(descEl, descText, { speed: 26, variance: 10, pause: 140 }));
   };
 
   // --- GSAP reveal .hero only when scrolled into view ---

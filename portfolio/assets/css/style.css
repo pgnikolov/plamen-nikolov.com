@@ -299,11 +299,16 @@ body::before {
 /* Left-aligned hero layout with terminal card on the right */
 .hero-wrap {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  align-items: center;
+  /* Two equal columns that can shrink together; cap total width to 2x 680 + gap */
+  grid-template-columns: 1fr 1fr;
+  align-items: center; /* center items vertically; avoid stretching to tallest */
+  justify-content: center; /* center the two equal-width columns as a block */
   gap: 40px;
+  max-width: calc(680px * 2 + 40px);
+  margin: 0 auto;
 }
-.hero-content { text-align: left; }
+.hero-content { text-align: left; max-width: 680px; width: 100%; overflow: visible; }
+/* Center the fixed-size terminal card within its column */
 .hero-aside { display: flex; align-items: center; justify-content: flex-end; }
 .avatar.placeholder { width: 220px; height: 220px; border-radius: 50%; border: 2px solid var(--card-border); background:
   radial-gradient(120% 120% at 100% 0%, rgba(110,231,183,0.2), transparent 60%),
@@ -348,22 +353,196 @@ body::before {
   background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: hueShift 12s linear infinite; }
 .eyebrow { font-size: .9rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 .lead { margin-top: 12px; color: var(--text); font-size: clamp(1rem, 1.1rem + 0.4vw, 1.35rem); }
-.hero-description { font-size: clamp(0.9rem, 0.95rem + 0.2vw, 1.15rem); color: var(--muted); max-width: 60ch; }
+.hero-description {
+  font-size: clamp(0.9rem, 0.95rem + 0.2vw, 1.15rem);
+  color: var(--muted);
+  max-width: 680px;
+  width: 100%;
+  /* Ensure the full paragraph is always visible and can wrap naturally */
+  white-space: normal;
+  overflow: visible;
+  line-height: 1.5;
+}
+
+/* Prevent initial flash of full text before typewriter starts */
+.hero-description.will-type { visibility: hidden; }
+.hero-description.is-typing { visibility: visible; }
+@media (prefers-reduced-motion: reduce) {
+  /* In reduced motion, show text immediately even if class remains */
+  .hero-description.will-type { visibility: visible; }
+}
+
+/* Typewriter caret for hero description */
+.hero-description.typewriter-caret { position: relative; }
+.hero-description.typewriter-caret::after {
+  content: "";
+  display: inline-block;
+  width: 0.08em;
+  height: 1em;
+  margin-left: 2px;
+  background: currentColor;
+  vertical-align: -0.1em;
+  animation: caretBlink 1s steps(1) infinite;
+}
+@keyframes caretBlink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-description.typewriter-caret::after { animation: none; }
+}
 
 /* Terminal-style card in hero */
 .terminal-card {
   width: 100%;
-  max-width: 320px;
+  max-width: 680px;
+  height: 274px;
   border-radius: 16px;
   border: 1px solid rgba(34, 229, 140, 0.45);
   background: linear-gradient(145deg, rgba(6, 27, 22, 0.9), rgba(2, 10, 8, 0.9));
   box-shadow:
     0 0 0 1px rgba(34, 229, 140, 0.25),
     0 18px 50px rgba(0, 0, 0, 0.65);
-  opacity: 0.92;
+  /* Remove overall opacity to avoid perceived background mismatch inside */
+  /* opacity: 0.92; */
   overflow: hidden;
   font-size: 0.9rem;
+  /* Fixed-size card; structure internals */
+  display: flex;
+  flex-direction: column;
 }
+
+/* Mini IDE styling (PyCharm/Darcula-inspired) */
+.ide-card { background: linear-gradient(160deg, rgba(8, 20, 17, 0.96), rgba(3, 11, 9, 0.96)); }
+/* Ensure the terminal background color fills the entire terminal area (header, editor, status) */
+.terminal-card.ide-card {
+  /* Use a single unified background so no inner sections look different */
+  --ide-bg: linear-gradient(145deg, rgba(6, 27, 22, 0.96), rgba(2, 10, 8, 0.96));
+  background: var(--ide-bg) !important;
+}
+.terminal-card.ide-card .ide-header,
+.terminal-card.ide-card .ide-editor,
+.terminal-card.ide-card .ide-status {
+  /* Let the parent unified background show through */
+  background: inherit !important;
+}
+/* Remove the radial tint behind the code lines so the fill is uniform */
+.terminal-card.ide-card .ide-editor {
+  background: inherit !important;
+}
+/* Make the gutter match the full background while keeping its divider */
+.terminal-card.ide-card .ide-editor .gutter {
+  background: inherit !important;
+}
+/* Light theme: keep the same unified approach so the fill is consistent */
+[data-theme="light"] .terminal-card.ide-card {
+  --ide-bg: linear-gradient(160deg, rgba(250, 252, 251, 0.96), rgba(238, 243, 242, 0.96));
+  background: var(--ide-bg) !important;
+}
+[data-theme="light"] .terminal-card.ide-card .ide-header,
+[data-theme="light"] .terminal-card.ide-card .ide-editor,
+[data-theme="light"] .terminal-card.ide-card .ide-status,
+[data-theme="light"] .terminal-card.ide-card .ide-editor .gutter {
+  background: inherit !important;
+}
+
+/* Ensure our unified background overrides later section-specific backgrounds */
+.terminal-card.ide-card .ide-header,
+.terminal-card.ide-card .ide-status {
+  background: inherit !important; /* beats later .ide-header/.ide-status rules */
+}
+.terminal-card.ide-card .ide-editor .gutter { background: inherit !important; }
+[data-theme="light"] .terminal-card.ide-card .ide-header,
+[data-theme="light"] .terminal-card.ide-card .ide-status { background: inherit !important; }
+[data-theme="light"] .terminal-card.ide-card .ide-editor .gutter { background: inherit !important; }
+.ide-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 6px 0 8px;
+  background: linear-gradient(180deg, rgba(34,229,140,0.10), rgba(0,0,0,0.10));
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+}
+.ide-traffic { display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; }
+.ide-traffic .dot { width: 8px; height: 8px; border-radius: 999px; opacity: .9; }
+.ide-tabs { display: flex; align-items: center; gap: 4px; overflow: hidden; }
+.ide-tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+}
+.ide-tab.active { background: rgba(255,255,255,0.06); color: #eafff7; border-color: var(--card-border); }
+.ide-tab:hover { color: var(--accent-2); border-color: var(--card-border); }
+.ide-toolbar { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+.ide-tool {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+.ide-tool:hover { border-color: var(--card-border); color: var(--accent); background: rgba(255,255,255,0.04); }
+
+.ide-editor {
+  flex: 1 1 auto;
+  display: flex;
+  overflow: hidden;
+  /* Remove overlay so the editor inherits the unified terminal background */
+  background: inherit;
+}
+.ide-editor .gutter {
+  list-style: none;
+  margin: 0;
+  padding: 6px 6px 6px 8px;
+  width: 30px;
+  background: rgba(0,0,0,0.25);
+  border-right: 1px solid var(--card-border);
+  color: var(--muted);
+  font-size: 12px; /* increased for better readability */
+  line-height: 1.4;
+  text-align: right;
+}
+.ide-editor .gutter li { height: 1.35em; }
+.ide-editor .code {
+  margin: 0;
+  padding: 6px 8px;
+  white-space: pre-wrap; /* wrap long lines instead of scrolling */
+  word-break: break-word; /* break very long tokens to avoid overflow */
+  overflow: hidden; /* no scrollbars */
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; /* increased terminal code font size */
+  line-height: 1.4;
+  color: #eafff7;
+}
+.ide-editor .code code { background: transparent; }
+
+.ide-status {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  border-top: 1px solid var(--card-border);
+  background: rgba(0,0,0,0.20);
+  color: var(--muted);
+  font-size: 10.5px;
+}
+.ide-status span { display: inline-flex; align-items: center; gap: 6px; }
+.ide-status span:last-child { margin-left: auto; color: var(--accent-2); }
+
+/* Light theme adjustments for IDE */
+[data-theme="light"] .ide-card { background: linear-gradient(160deg, rgba(250, 252, 251, 0.96), rgba(238, 243, 242, 0.96)); }
+[data-theme="light"] .ide-header { background: linear-gradient(180deg, rgba(34,229,140,0.06), rgba(0,0,0,0.02)); border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .ide-editor .gutter { background: rgba(0,0,0,0.05); border-right-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .ide-status { background: rgba(0,0,0,0.05); }
 .terminal-header {
   display: flex;
   align-items: center;
@@ -390,6 +569,8 @@ body::before {
   padding: 12px 14px 14px;
   font-family: 'JetBrains Mono', monospace;
   background: radial-gradient(circle at 0 0, rgba(34,229,140,0.12), transparent 55%);
+  /* Take remaining space so the card matches the left column height */
+  flex: 1 1 auto;
 }
 .terminal-body p {
   margin: 4px 0;
@@ -415,9 +596,159 @@ body::before {
     justify-content: flex-start;
     margin-top: 24px;
   }
-  .terminal-card {
-    max-width: 100%;
-  }
+  /* Mobile/tablet: keep height, cap width to avoid overflow but allow more space */
+  .terminal-card { width: min(100%, 480px); height: 274px; }
+}
+
+/* ===================== About: Card grid ===================== */
+.about-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 18px;
+}
+
+/* Two-column variant: exactly 2 boxes per row on desktop */
+.about-cards.two-col {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+/* Make cards fluid to fill the grid column width */
+.about-cards.two-col .card {
+  width: 100%;
+  height: auto;
+}
+.about-cards.two-col .card2 {
+  width: calc(100% - var(--inset));
+  height: auto;
+}
+/* Height variants for "different length" */
+.about-cards.two-col .card.h-short .card2 { min-height: 230px; }
+.about-cards.two-col .card.h-tall .card2 { min-height: 320px; }
+
+/* Responsive: stack to one column on small screens */
+@media (max-width: 700px) {
+  .about-cards.two-col { grid-template-columns: 1fr; }
+}
+
+/* Frame (outer) */
+.card {
+  --w: 190px;
+  --h: 254px;
+  width: var(--w);
+  height: var(--h);
+  background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
+  border-radius: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+}
+.card:hover { transform: translateY(-4px); filter: brightness(1.06); }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
+
+/* Panel (inner) */
+.card2 {
+  --inset: 10px; /* inner shrink vs outer */
+  width: calc(var(--w) - var(--inset));
+  height: calc(var(--h) - var(--inset));
+  background-color: #1a1a1a;
+  border-radius: 20px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: stretch;
+}
+.card:hover .card2 { background-color: #202020; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+
+/* Sizes */
+.card.size-sm { --w: 180px; --h: 230px; }
+.card.size-md { --w: 190px; --h: 254px; }
+.card.size-lg { --w: 230px; --h: 300px; }
+
+/* Content */
+.card-body {
+  padding: 16px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--text);
+  width: 100%;
+}
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+.card-body p { color: var(--muted); font-size: 0.95rem; line-height: 1.45; margin: 0; }
+.card-list { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.95rem; }
+.card-list li { margin: 4px 0; }
+
+/* Make CTAs align at bottom when present */
+.card-body .btn { margin-top: auto; align-self: flex-start; }
+
+/* Light theme adjustments */
+[data-theme="light"] .card2 { background-color: #ffffff; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); }
+[data-theme="light"] .card:hover .card2 { background-color: #fafafa; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); }
+
+/* Responsiveness: allow larger cards to wrap nicely */
+@media (max-width: 700px) {
+  .card.size-lg { --w: 210px; --h: 280px; }
+}
+@media (max-width: 520px) {
+  .about-cards { justify-content: center; gap: 16px; }
+  .card, .card.size-sm, .card.size-md, .card.size-lg { --w: min(100%, 340px); --h: auto; }
+  .card2 { width: calc(var(--w) - var(--inset)); height: auto; }
+}
+
+/* =============================================================
+   FINAL OVERRIDE: enforce a single, unified background color
+   across the entire terminal (header, editor, gutter, status).
+   Placed at the end of the file to win the cascade on all UA
+   and theme-specific rules.
+   ============================================================= */
+.terminal-card.ide-card {
+  /* Use a single flat color (no gradients) for a one-piece look */
+  --ide-bg-solid: #0c1f1a; /* dark evergreen */
+  background: var(--ide-bg-solid) !important;
+  background-image: none !important;
+}
+.terminal-card.ide-card .ide-header,
+.terminal-card.ide-card .ide-editor,
+.terminal-card.ide-card .ide-editor .gutter,
+.terminal-card.ide-card .ide-status,
+.terminal-card.ide-card .ide-editor .code,
+.terminal-card.ide-card .ide-editor .code code,
+.terminal-card.ide-card pre.code,
+.terminal-card.ide-card code {
+  /* Every inner surface inherits the same solid background */
+  background: inherit !important;
+  background-image: none !important;
+}
+
+/* Light theme unified background */
+[data-theme="light"] .terminal-card.ide-card {
+  --ide-bg-solid: #f3f7f6; /* soft light */
+  background: var(--ide-bg-solid) !important;
+  background-image: none !important;
+}
+[data-theme="light"] .terminal-card.ide-card .ide-header,
+[data-theme="light"] .terminal-card.ide-card .ide-editor,
+[data-theme="light"] .terminal-card.ide-card .ide-editor .gutter,
+[data-theme="light"] .terminal-card.ide-card .ide-status,
+[data-theme="light"] .terminal-card.ide-card .ide-editor .code,
+[data-theme="light"] .terminal-card.ide-card .ide-editor .code code,
+[data-theme="light"] .terminal-card.ide-card pre.code,
+[data-theme="light"] .terminal-card.ide-card code {
+  background: inherit !important;
+  background-image: none !important;
 }
 
 @keyframes hueShift {

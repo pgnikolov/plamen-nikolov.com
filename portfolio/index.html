@@ -108,54 +108,109 @@
         <p class="eyebrow">Hi, I’m</p>
         <h1 class="display" id="dev-name">Plamen Nikolov</h1>
         <p class="lead" id="dev-tagline">Python &amp; Web Developer · Building Efficient, Real-World Solutions</p>
-        <p class="lead hero-description">
+        <p class="lead hero-description will-type">
           I design and build scalable applications with clean architecture, strong performance, and a focus on solving real business challenges — not just writing code. Always learning, improving, and turning ideas into working products.
         </p>
       </div>
       <aside class="hero-aside">
-        <div class="terminal-card" aria-label="Developer status snippet">
-          <div class="terminal-header">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
-            <span class="terminal-title">plamen@portfolio:~</span>
+        <div class="terminal-card ide-card" aria-label="Mini IDE window showing Python file">
+          <div class="ide-header">
+            <div class="ide-traffic" aria-hidden="true">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <div class="ide-tabs" role="tablist" aria-label="Editor tabs">
+              <button class="ide-tab active" role="tab" aria-selected="true" tabindex="0">
+                <i class="fa-brands fa-python" aria-hidden="true"></i>
+                main.py
+              </button>
+              <button class="ide-tab" role="tab" aria-selected="false" tabindex="-1">README.md</button>
+            </div>
+            <div class="ide-toolbar" aria-label="Editor toolbar">
+              <button class="ide-tool" title="Run" aria-label="Run"><i class="fa-solid fa-play"></i></button>
+              <button class="ide-tool" title="Debug" aria-label="Debug"><i class="fa-solid fa-bug"></i></button>
+              <button class="ide-tool" title="Git" aria-label="Git"><i class="fa-brands fa-git-alt"></i></button>
+            </div>
           </div>
-          <div class="terminal-body">
-            <p><span class="prompt">&gt;</span> <span class="cmd">developer.status()</span></p>
-            <p class="value">"active"</p>
-            <p><span class="prompt">&gt;</span> <span class="cmd">stack.primary</span></p>
-            <p class="value">["Python", "Flask", "FastAPI"]</p>
-            <p><span class="prompt">&gt;</span> <span class="cmd">location</span></p>
-            <p class="value">"Netherlands"</p>
+          <div class="ide-editor" role="region" aria-label="Code editor">
+            <ol class="gutter" aria-hidden="true">
+              <li>1</li>
+              <li>2</li>
+              <li>3</li>
+              <li>4</li>
+              <li>5</li>
+              <li>6</li>
+            </ol>
+            <pre class="code"><code class="language-python">class PlamenNikolov(Developer):
+    def __init__(self):
+        self.role = "Python Developer"
+        self.stack = ["Flask", "FastAPI", "Playwright"]
+        self.location = "Netherlands"
+
+    def status(self):
+        return "active"</code></pre>
+          </div>
+          <div class="ide-status" aria-label="Status bar">
+            <span><i class="fa-brands fa-python" aria-hidden="true"></i> Python 3.11</span>
+            <span>UTF-8</span>
+            <span>LF</span>
+            <span>main.py</span>
           </div>
         </div>
       </aside>
     </div>
-    <a class="scroll-indicator" href="#projects" aria-label="Scroll to projects">
-      <span class="chev"></span>
-    </a>
   </section>
 
   <!-- About -->
   <section class="about" id="about" aria-labelledby="about-title">
     <div class="container">
       <h2 id="about-title">About Me</h2>
-      <div class="prose">
-        <p>I’m currently expanding my expertise as a student at SoftUni, diving deep into Python and modern software development.</p>
-        <p>I bring a practical, problem-solving mindset from my professional experience in industrial environments, which I apply to my development work.</p>
-        <p>My goal is to write clean, maintainable, and efficient code that solves real-world problems.</p>
-        <p>I’m constantly learning and I'm eager to explore new technologies and best practices.</p>
-        <p>I’m open to collaborating on interesting Python projects and contributing to the developer community.</p>
+      <div class="about-cards two-col">
+        <!-- Box 1 (taller) -->
+        <article class="card h-tall" aria-label="Learning @ SoftUni">
+          <div class="card2">
+            <div class="card-body">
+              <h3 class="card-title"><i class="fa-solid fa-graduation-cap"></i> Learning @ SoftUni</h3>
+              <p>Currently expanding my expertise in Python and modern software development.</p>
+            </div>
+          </div>
+        </article>
 
-        <h3 class="subheading">A Glimpse Into My Personal Life</h3>
-        <ul class="about-list">
-          <li>Exploring new places and cultures.</li>
-          <li>Hiking with my dog, enjoying the great outdoors.</li>
-          <li>Capturing moments through my lens, blending my love for technology and art in photography.</li>
-        </ul>
-        <div class="about-cta" style="margin-top: 14px;">
-          <a class="btn ghost" href="mailto:hi@plamen.dev"><i class="fa-regular fa-envelope"></i> Contact</a>
-        </div>
+        <!-- Box 2 (shorter) -->
+        <article class="card h-short" aria-label="Pragmatic Mindset">
+          <div class="card2">
+            <div class="card-body">
+              <h3 class="card-title"><i class="fa-solid fa-gears"></i> Pragmatic Mindset</h3>
+              <p>Hands‑on, practical approach to solving real problems.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Box 3 (taller) -->
+        <article class="card h-tall" aria-label="Beyond the Keyboard">
+          <div class="card2">
+            <div class="card-body">
+              <h3 class="card-title"><i class="fa-regular fa-compass"></i> Beyond the Keyboard</h3>
+              <ul class="card-list">
+                <li>Exploring new places and cultures</li>
+                <li>Hiking with my dog and enjoying the outdoors</li>
+                <li>Photography: merging tech and art</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- Box 4 (shorter) -->
+        <article class="card h-short" aria-label="Contact">
+          <div class="card2">
+            <div class="card-body">
+              <h3 class="card-title"><i class="fa-regular fa-envelope"></i> Contact</h3>
+              <p>Let’s build something useful together.</p>
+              <a class="btn small" href="mailto:hi@plamen.dev"><i class="fa-regular fa-paper-plane"></i> Say hi</a>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
